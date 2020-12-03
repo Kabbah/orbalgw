@@ -64,16 +64,16 @@ func TestMessageMarshal(t *testing.T) {
 func TestMessageUnmarshal(t *testing.T) {
 	tests := []struct {
 		buf        []byte
-		message    Message
+		msg        Message
 		shouldFail bool
 	}{
-		{nil, Message{}, true},
-		{[]byte{}, Message{}, true},
-		{[]byte{0x01}, Message{}, true},
-		{[]byte{0x02, 0x16}, Message{PingReq, nil}, false},
-		{[]byte{0x03, 0x16}, Message{}, true},
-		{[]byte{0x01, 0x00, 0x04, 0x16}, Message{PingReq, nil}, false},
-		{[]byte{0x01, 0x00, 0x05, 0x16}, Message{}, true},
+		{buf: nil, shouldFail: true},
+		{buf: []byte{}, shouldFail: true},
+		{buf: []byte{0x01}, shouldFail: true},
+		{buf: []byte{0x02, 0x16}, msg: Message{PingReq, nil}},
+		{buf: []byte{0x03, 0x16}, shouldFail: true},
+		{buf: []byte{0x01, 0x00, 0x04, 0x16}, msg: Message{PingReq, nil}},
+		{buf: []byte{0x01, 0x00, 0x05, 0x16}, shouldFail: true},
 	}
 
 	for _, tt := range tests {
@@ -83,10 +83,10 @@ func TestMessageUnmarshal(t *testing.T) {
 			if tt.shouldFail {
 				t.Error("Expected error, but got nil")
 			} else {
-				if msg.Type != tt.message.Type {
-					t.Errorf("Expected message type to be %v, got %v", msg.Type, tt.message.Type)
+				if msg.Type != tt.msg.Type {
+					t.Errorf("Expected message type to be %v, got %v", msg.Type, tt.msg.Type)
 				}
-				if !bytes.Equal(msg.Body, tt.message.Body) {
+				if !bytes.Equal(msg.Body, tt.msg.Body) {
 					t.Error("Message body is wrong")
 				}
 			}
