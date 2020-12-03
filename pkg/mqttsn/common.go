@@ -5,12 +5,12 @@ import "fmt"
 // ProtocolID of MQTT-SN is always 0x01.
 const ProtocolID uint8 = 1
 
-// The TopicIDType field in MQTT-SN is 1-byte long.
-type TopicIDType uint8
+// The TopicType field in MQTT-SN is 1-byte long.
+type TopicType uint8
 
-// Values of the TopicIDType field.
+// Values of the TopicType field.
 const (
-	NormalTopicID TopicIDType = iota
+	NormalTopicID TopicType = iota
 	PredefinedTopicID
 	ShortTopicName
 )
@@ -33,7 +33,7 @@ type Flags struct {
 	Retain       bool
 	Will         bool
 	CleanSession bool
-	TopicID      TopicIDType
+	TopicType    TopicType
 }
 
 // Value returns the encoded form of MQTT-SN flags.
@@ -42,7 +42,7 @@ func (f *Flags) Value() (uint8, error) {
 		return 0, fmt.Errorf("mqttsn: invalid QoS level (%v)", f.QoS)
 	}
 
-	bits := uint8(f.TopicID)
+	bits := uint8(f.TopicType)
 	if f.CleanSession {
 		bits |= 1 << 2
 	}
@@ -65,9 +65,9 @@ func (f *Flags) Value() (uint8, error) {
 
 // Parse interprets the encoded form of MQTT-SN flags.
 func (f *Flags) Parse(value uint8) error {
-	topicID := TopicIDType(value & 0b0000_0011)
-	if topicID > ShortTopicName {
-		return fmt.Errorf("mqttsn: invalid topic ID type (%v)", topicID)
+	topicType := TopicType(value & 0b0000_0011)
+	if topicType > ShortTopicName {
+		return fmt.Errorf("mqttsn: invalid topic type (%v)", topicType)
 	}
 
 	qos := int8((value & 0b0110_0000) >> 5)
@@ -78,7 +78,7 @@ func (f *Flags) Parse(value uint8) error {
 		qos = -1
 	}
 
-	f.TopicID = topicID
+	f.TopicType = topicType
 	f.CleanSession = (value & 0b0000_0100) != 0
 	f.Will = (value & 0b0000_1000) != 0
 	f.Retain = (value & 0b0001_0000) != 0
