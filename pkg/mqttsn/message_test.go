@@ -9,13 +9,13 @@ import (
 func TestMessageMarshal(t *testing.T) {
 	body := make([]byte, 65532)
 	tests := []Message{
-		Message{Type: Advertise, Body: body[:3]},
-		Message{Type: PingReq, Body: nil},
-		Message{Type: Publish, Body: body[:maxBodyLength1Byte]},
-		Message{Type: Publish, Body: body[:maxBodyLength1Byte+1]},
-		Message{Type: Publish, Body: body[:maxBodyLength3Bytes]},
-		Message{Type: Publish, Body: body[:maxBodyLength3Bytes+1]},
-		Message{Type: Publish, Body: body},
+		Message{Advertise, body[:3]},
+		Message{PingReq, nil},
+		Message{Publish, body[:maxBodyLength1Byte]},
+		Message{Publish, body[:maxBodyLength1Byte+1]},
+		Message{Publish, body[:maxBodyLength3Bytes]},
+		Message{Publish, body[:maxBodyLength3Bytes+1]},
+		Message{Publish, body},
 	}
 
 	for _, msg := range tests {
