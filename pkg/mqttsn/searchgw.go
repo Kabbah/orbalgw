@@ -8,10 +8,10 @@ type SearchGwMessage struct {
 }
 
 // Marshal converts a message to its binary form.
-func (m *SearchGwMessage) Marshal() []byte {
+func (m *SearchGwMessage) Marshal() ([]byte, error) {
 	body := make([]byte, 1)
 	body[0] = m.Radius
-	return body
+	return body, nil
 }
 
 // Unmarshal parses a binary buffer into a message.

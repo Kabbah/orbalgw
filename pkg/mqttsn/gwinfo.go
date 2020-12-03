@@ -9,10 +9,10 @@ type GwInfoMessage struct {
 }
 
 // Marshal converts a message to its binary form.
-func (m *GwInfoMessage) Marshal() []byte {
+func (m *GwInfoMessage) Marshal() ([]byte, error) {
 	body := make([]byte, 1, 1+len(m.GatewayAddress))
 	body[0] = m.GatewayID
-	return append(body, m.GatewayAddress...)
+	return append(body, m.GatewayAddress...), nil
 }
 
 // Unmarshal parses a binary buffer into a message.

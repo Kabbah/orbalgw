@@ -12,11 +12,11 @@ type AdvertiseMessage struct {
 }
 
 // Marshal converts a message to its binary form.
-func (m *AdvertiseMessage) Marshal() []byte {
+func (m *AdvertiseMessage) Marshal() ([]byte, error) {
 	body := make([]byte, 3)
 	body[0] = m.GatewayID
 	binary.BigEndian.PutUint16(body[1:3], m.Duration)
-	return body
+	return body, nil
 }
 
 // Unmarshal parses a binary buffer into a message.
