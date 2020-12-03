@@ -2,9 +2,6 @@ package mqttsn
 
 import "fmt"
 
-// ProtocolID of MQTT-SN is always 0x01.
-const ProtocolID uint8 = 1
-
 // The TopicType field in MQTT-SN is 1-byte long.
 type TopicType uint8
 
