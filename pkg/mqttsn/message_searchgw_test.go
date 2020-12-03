@@ -16,7 +16,7 @@ func TestSearchGwMarshal(t *testing.T) {
 	for _, tt := range tests {
 		buf, err := tt.msg.MarshalBinary()
 		if err == nil {
-			if bytes.Compare(buf, tt.buf) != 0 {
+			if !bytes.Equal(buf, tt.buf) {
 				t.Error("Message body is wrong")
 			}
 		} else {
