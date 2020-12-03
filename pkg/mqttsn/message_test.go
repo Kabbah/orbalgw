@@ -38,7 +38,7 @@ func TestMessageMarshal(t *testing.T) {
 				if buf[3] != uint8(msg.Type) {
 					t.Errorf("Expected message type field to be %v, got %v", uint8(msg.Type), buf[3])
 				}
-				if bytes.Compare(buf[4:], msg.Body) != 0 {
+				if !bytes.Equal(buf[4:], msg.Body) {
 					t.Error("Message body is wrong")
 				}
 			} else {
@@ -51,7 +51,7 @@ func TestMessageMarshal(t *testing.T) {
 				if buf[1] != uint8(msg.Type) {
 					t.Errorf("Expected message type field to be %v, got %v", uint8(msg.Type), buf[1])
 				}
-				if bytes.Compare(buf[2:], msg.Body) != 0 {
+				if !bytes.Equal(buf[2:], msg.Body) {
 					t.Error("Message body is wrong")
 				}
 			}
@@ -63,34 +63,34 @@ func TestMessageMarshal(t *testing.T) {
 
 func TestMessageUnmarshal(t *testing.T) {
 	tests := []struct {
-		buf     []byte
-		hasErr  bool
-		message Message
+		buf        []byte
+		message    Message
+		shouldFail bool
 	}{
-		{nil, true, Message{}},
-		{[]byte{}, true, Message{}},
-		{[]byte{0x01}, true, Message{}},
-		{[]byte{0x02, 0x16}, false, Message{PingReq, nil}},
-		{[]byte{0x03, 0x16}, true, Message{}},
-		{[]byte{0x01, 0x00, 0x04, 0x16}, false, Message{PingReq, nil}},
-		{[]byte{0x01, 0x00, 0x05, 0x16}, true, Message{}},
+		{nil, Message{}, true},
+		{[]byte{}, Message{}, true},
+		{[]byte{0x01}, Message{}, true},
+		{[]byte{0x02, 0x16}, Message{PingReq, nil}, false},
+		{[]byte{0x03, 0x16}, Message{}, true},
+		{[]byte{0x01, 0x00, 0x04, 0x16}, Message{PingReq, nil}, false},
+		{[]byte{0x01, 0x00, 0x05, 0x16}, Message{}, true},
 	}
 
 	for _, tt := range tests {
 		var msg Message
 		err := msg.UnmarshalBinary(tt.buf)
 		if err == nil {
-			if tt.hasErr {
+			if tt.shouldFail {
 				t.Error("Expected error, but got nil")
 			} else {
 				if msg.Type != tt.message.Type {
 					t.Errorf("Expected message type to be %v, got %v", msg.Type, tt.message.Type)
 				}
-				if bytes.Compare(msg.Body, tt.message.Body) != 0 {
+				if !bytes.Equal(msg.Body, tt.message.Body) {
 					t.Error("Message body is wrong")
 				}
 			}
-		} else if !tt.hasErr {
+		} else if !tt.shouldFail {
 			t.Errorf("Unexpected error: %v", err)
 		}
 	}
