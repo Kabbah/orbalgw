@@ -22,6 +22,8 @@ func (m *GwInfoMessage) UnmarshalBinary(body []byte) error {
 	}
 
 	m.GatewayID = body[0]
-	m.GatewayAddress = body[1:]
+	gwAddr := body[1:]
+	m.GatewayAddress = make([]byte, len(gwAddr))
+	copy(m.GatewayAddress, gwAddr)
 	return nil
 }

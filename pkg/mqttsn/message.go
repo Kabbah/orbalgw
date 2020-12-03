@@ -76,25 +76,28 @@ func (m *Message) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary by parsing the contents of a MQTT-SN binary
-// message. The body (variable part) is just sliced from the original buffer as is, and should be parsed afterwards.
+// message. The body (variable part) is copied in binary form and should be parsed separately afterwards.
 func (m *Message) UnmarshalBinary(data []byte) error {
 	if len(data) < 2 {
 		return fmt.Errorf("mqttsn: invalid header size (%v)", len(data))
 	}
 
 	var length int
+	var body []byte
 	if data[0] == 1 {
 		if len(data) < 4 {
 			return fmt.Errorf("mqttsn: invalid header size (%v)", len(data))
 		}
 		length = int(binary.BigEndian.Uint16(data[1:3]))
 		m.Type = MessageType(data[3])
-		m.Body = data[4:]
+		body = data[4:]
 	} else {
 		length = int(data[0])
 		m.Type = MessageType(data[1])
-		m.Body = data[2:]
+		body = data[2:]
 	}
+	m.Body = make([]byte, len(body))
+	copy(m.Body, body)
 
 	if len(data) != length {
 		return fmt.Errorf("mqttsn: header indicates incorrect message length (%v)", length)
