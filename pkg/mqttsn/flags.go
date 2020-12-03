@@ -2,27 +2,6 @@ package mqttsn
 
 import "fmt"
 
-// The TopicType field in MQTT-SN is 1-byte long.
-type TopicType uint8
-
-// Values of the TopicType field.
-const (
-	NormalTopicID TopicType = iota
-	PredefinedTopicID
-	ShortTopicName
-)
-
-// The ReturnCode field in MQTT-SN is 1-byte long.
-type ReturnCode uint8
-
-// Values of the ReturnCode field.
-const (
-	Accepted ReturnCode = iota
-	RejectedCongestion
-	RejectedInvalidTopicID
-	RejectedNotSupported
-)
-
 // Flags used in some MQTT-SN messages.
 type Flags struct {
 	Dup          bool
