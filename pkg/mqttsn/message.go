@@ -37,3 +37,9 @@ const (
 	WillMsgResp
 	Encapsulated MessageType = 254
 )
+
+// Message represents a full MQTT-SN message, which has a type and a body (variable part).
+type Message struct {
+	Type MessageType
+	Body []byte
+}
