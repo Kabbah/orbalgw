@@ -54,7 +54,7 @@ type Message struct {
 }
 
 // Marshal outputs the message as a buffer in the MQTT-SN general message format.
-func (m Message) Marshal() ([]byte, error) {
+func (m *Message) Marshal() ([]byte, error) {
 	length := len(m.Body)
 	if length > maxBodyLength3Bytes {
 		return nil, fmt.Errorf("message: length (%v) exceeds MQTT-SN limit", length)
