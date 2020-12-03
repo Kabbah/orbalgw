@@ -62,3 +62,27 @@ func (f *Flags) Value() (uint8, error) {
 	}
 	return bits, nil
 }
+
+// Parse interprets the encoded form of MQTT-SN flags.
+func (f *Flags) Parse(value uint8) error {
+	topicID := TopicIDType(value & 0b0000_0011)
+	if topicID > ShortTopicName {
+		return fmt.Errorf("mqttsn: invalid topic ID type (%v)", topicID)
+	}
+
+	qos := int8((value & 0b0110_0000) >> 5)
+	if qos > 3 {
+		return fmt.Errorf("mqttsn: invalid QoS level (%v)", qos)
+	}
+	if qos == 3 {
+		qos = -1
+	}
+
+	f.TopicID = topicID
+	f.CleanSession = (value & 0b0000_0100) != 0
+	f.Will = (value & 0b0000_1000) != 0
+	f.Retain = (value & 0b0001_0000) != 0
+	f.QoS = qos
+	f.Dup = (value & 0b1000_0000) != 0
+	return nil
+}
