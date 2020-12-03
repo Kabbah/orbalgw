@@ -27,19 +27,26 @@ func TestSearchGwMarshal(t *testing.T) {
 
 func TestSearchGwUnmarshal(t *testing.T) {
 	tests := []struct {
-		buf []byte
-		msg SearchGwMessage
+		buf        []byte
+		msg        SearchGwMessage
+		shouldFail bool
 	}{
-		{[]byte{0x0a}, SearchGwMessage{10}},
+		{buf: nil, shouldFail: true},
+		{buf: []byte{}, shouldFail: true},
+		{buf: []byte{0x0a}, msg: SearchGwMessage{10}},
 	}
 
 	for _, tt := range tests {
 		var msg SearchGwMessage
 		if err := msg.UnmarshalBinary(tt.buf); err == nil {
-			if msg.Radius != tt.msg.Radius {
-				t.Errorf("Expected Radius to be %v, got %v", tt.msg.Radius, msg.Radius)
+			if tt.shouldFail {
+				t.Error("Expected error, but got nil")
+			} else {
+				if msg.Radius != tt.msg.Radius {
+					t.Errorf("Expected Radius to be %v, got %v", tt.msg.Radius, msg.Radius)
+				}
 			}
-		} else {
+		} else if !tt.shouldFail {
 			t.Errorf("Unexpected error: %v", err)
 		}
 	}
