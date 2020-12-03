@@ -60,3 +60,38 @@ func TestMessageMarshal(t *testing.T) {
 		}
 	}
 }
+
+func TestMessageUnmarshal(t *testing.T) {
+	tests := []struct {
+		buf     []byte
+		hasErr  bool
+		message Message
+	}{
+		{nil, true, Message{}},
+		{[]byte{}, true, Message{}},
+		{[]byte{0x01}, true, Message{}},
+		{[]byte{0x02, 0x16}, false, Message{PingReq, nil}},
+		{[]byte{0x03, 0x16}, true, Message{}},
+		{[]byte{0x01, 0x00, 0x04, 0x16}, false, Message{PingReq, nil}},
+		{[]byte{0x01, 0x00, 0x05, 0x16}, true, Message{}},
+	}
+
+	for _, tt := range tests {
+		var msg Message
+		err := msg.Unmarshal(tt.buf)
+		if err == nil {
+			if tt.hasErr {
+				t.Error("Expected error, but got nil")
+			} else {
+				if msg.Type != tt.message.Type {
+					t.Errorf("Expected message type to be %v, got %v", msg.Type, tt.message.Type)
+				}
+				if bytes.Compare(msg.Body, tt.message.Body) != 0 {
+					t.Error("Message body is wrong")
+				}
+			}
+		} else if !tt.hasErr {
+			t.Errorf("Unexpected error: %v", err)
+		}
+	}
+}
