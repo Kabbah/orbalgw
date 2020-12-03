@@ -31,10 +31,10 @@ func TestAdvertiseUnmarshal(t *testing.T) {
 		msg        AdvertiseMessage
 		shouldFail bool
 	}{
-		{nil, AdvertiseMessage{}, true},
-		{[]byte{}, AdvertiseMessage{}, true},
-		{[]byte{0x01, 0x03}, AdvertiseMessage{}, true},
-		{[]byte{0x01, 0x03, 0xe8}, AdvertiseMessage{1, 1000}, false},
+		{buf: nil, shouldFail: true},
+		{buf: []byte{}, shouldFail: true},
+		{buf: []byte{0x01, 0x03}, shouldFail: true},
+		{buf: []byte{0x01, 0x03, 0xe8}, msg: AdvertiseMessage{1, 1000}},
 	}
 
 	for _, tt := range tests {
