@@ -35,15 +35,12 @@ func (m *ConnectMessage) UnmarshalBinary(body []byte) error {
 	if len(body) < 4 {
 		return fmt.Errorf("mqttsn: invalid body length (%v)", len(body))
 	}
-
-	err := m.Flags.Parse(body[0])
-	if err != nil {
-		return err
-	}
 	if body[1] != protocolID {
 		return fmt.Errorf("mqttsn: invalid protocol ID (%v)", body[1])
 	}
+
+	err := m.Flags.Parse(body[0])
 	m.Duration = binary.BigEndian.Uint16(body[2:4])
 	m.ClientID = string(body[4:])
-	return nil
+	return err
 }
