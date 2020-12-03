@@ -53,8 +53,8 @@ type Message struct {
 	Body []byte
 }
 
-// Marshal outputs the message as a buffer in the MQTT-SN general message format.
-func (m *Message) Marshal() ([]byte, error) {
+// MarshalBinary implements encoding.BinaryMarshaler.MarshalBinary by outputting a MQTT-SN binary message.
+func (m *Message) MarshalBinary() ([]byte, error) {
 	length := len(m.Body)
 	if length > maxBodyLength3Bytes {
 		return nil, fmt.Errorf("message: length (%v) exceeds MQTT-SN limit", length)
@@ -77,9 +77,9 @@ func (m *Message) Marshal() ([]byte, error) {
 	return append(header, m.Body...), nil
 }
 
-// Unmarshal parses the contents of a buffer in the MQTT-SN general message format. The body (variable part) is just
-// sliced from the original buffer as is, and should be parsed afterwards.
-func (m *Message) Unmarshal(data []byte) error {
+// UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary by parsing the contents of a MQTT-SN binary
+// message. The body (variable part) is just sliced from the original buffer as is, and should be parsed afterwards.
+func (m *Message) UnmarshalBinary(data []byte) error {
 	if len(data) < 2 {
 		return errors.New("message: invalid MQTT-SN buffer")
 	}

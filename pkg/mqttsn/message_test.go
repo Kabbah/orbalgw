@@ -19,7 +19,7 @@ func TestMessageMarshal(t *testing.T) {
 	}
 
 	for _, msg := range tests {
-		buf, err := msg.Marshal()
+		buf, err := msg.MarshalBinary()
 		if err == nil {
 			headerLen := len(buf) - len(msg.Body)
 			if len(msg.Body) > maxBodyLength3Bytes {
@@ -78,7 +78,7 @@ func TestMessageUnmarshal(t *testing.T) {
 
 	for _, tt := range tests {
 		var msg Message
-		err := msg.Unmarshal(tt.buf)
+		err := msg.UnmarshalBinary(tt.buf)
 		if err == nil {
 			if tt.hasErr {
 				t.Error("Expected error, but got nil")

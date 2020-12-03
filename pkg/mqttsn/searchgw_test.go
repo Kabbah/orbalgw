@@ -14,7 +14,7 @@ func TestSearchGwMarshal(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		buf, err := tt.msg.Marshal()
+		buf, err := tt.msg.MarshalBinary()
 		if err == nil {
 			if bytes.Compare(buf, tt.buf) != 0 {
 				t.Error("Message body is wrong")
@@ -35,7 +35,7 @@ func TestSearchGwUnmarshal(t *testing.T) {
 
 	for _, tt := range tests {
 		var msg SearchGwMessage
-		if err := msg.Unmarshal(tt.buf); err == nil {
+		if err := msg.UnmarshalBinary(tt.buf); err == nil {
 			if msg.Radius != tt.msg.Radius {
 				t.Errorf("Expected Radius to be %v, got %v", tt.msg.Radius, msg.Radius)
 			}

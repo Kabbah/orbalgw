@@ -12,8 +12,8 @@ type ConnectMessage struct {
 	ClientID string
 }
 
-// Marshal converts a message to its binary form.
-func (m *ConnectMessage) Marshal() ([]byte, error) {
+// MarshalBinary implements encoding.BinaryMarshaler.MarshalBinary.
+func (m *ConnectMessage) MarshalBinary() ([]byte, error) {
 	body := make([]byte, 4, 4+len(m.ClientID))
 
 	flags, err := m.Flags.Value()
@@ -27,8 +27,8 @@ func (m *ConnectMessage) Marshal() ([]byte, error) {
 	return append(body, m.ClientID...), nil
 }
 
-// Unmarshal parses a binary buffer into a message.
-func (m *ConnectMessage) Unmarshal(body []byte) error {
+// UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
+func (m *ConnectMessage) UnmarshalBinary(body []byte) error {
 	if len(body) < 4 {
 		return errors.New("message: body has invalid size")
 	}

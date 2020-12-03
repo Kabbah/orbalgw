@@ -11,16 +11,16 @@ type AdvertiseMessage struct {
 	Duration  uint16
 }
 
-// Marshal converts a message to its binary form.
-func (m *AdvertiseMessage) Marshal() ([]byte, error) {
+// MarshalBinary implements encoding.BinaryMarshaler.MarshalBinary.
+func (m *AdvertiseMessage) MarshalBinary() ([]byte, error) {
 	body := make([]byte, 3)
 	body[0] = m.GatewayID
 	binary.BigEndian.PutUint16(body[1:3], m.Duration)
 	return body, nil
 }
 
-// Unmarshal parses a binary buffer into a message.
-func (m *AdvertiseMessage) Unmarshal(body []byte) error {
+// UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
+func (m *AdvertiseMessage) UnmarshalBinary(body []byte) error {
 	if len(body) != 3 {
 		return errors.New("message: body has invalid size")
 	}

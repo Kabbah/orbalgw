@@ -7,15 +7,15 @@ type SearchGwMessage struct {
 	Radius uint8
 }
 
-// Marshal converts a message to its binary form.
-func (m *SearchGwMessage) Marshal() ([]byte, error) {
+// MarshalBinary implements encoding.BinaryMarshaler.MarshalBinary.
+func (m *SearchGwMessage) MarshalBinary() ([]byte, error) {
 	body := make([]byte, 1)
 	body[0] = m.Radius
 	return body, nil
 }
 
-// Unmarshal parses a binary buffer into a message.
-func (m *SearchGwMessage) Unmarshal(body []byte) error {
+// UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
+func (m *SearchGwMessage) UnmarshalBinary(body []byte) error {
 	if len(body) != 1 {
 		return errors.New("message: body has invalid size")
 	}

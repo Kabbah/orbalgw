@@ -14,7 +14,7 @@ func TestAdvertiseMarshal(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		buf, err := tt.msg.Marshal()
+		buf, err := tt.msg.MarshalBinary()
 		if err == nil {
 			if bytes.Compare(buf, tt.buf) != 0 {
 				t.Error("Message body is wrong")
@@ -35,7 +35,7 @@ func TestAdvertiseUnmarshal(t *testing.T) {
 
 	for _, tt := range tests {
 		var msg AdvertiseMessage
-		if err := msg.Unmarshal(tt.buf); err == nil {
+		if err := msg.UnmarshalBinary(tt.buf); err == nil {
 			if msg.GatewayID != tt.msg.GatewayID {
 				t.Errorf("Expected GatewayID to be %v, got %v", tt.msg.GatewayID, msg.GatewayID)
 			}

@@ -8,15 +8,15 @@ type GwInfoMessage struct {
 	GatewayAddress []byte
 }
 
-// Marshal converts a message to its binary form.
-func (m *GwInfoMessage) Marshal() ([]byte, error) {
+// MarshalBinary implements encoding.BinaryMarshaler.MarshalBinary.
+func (m *GwInfoMessage) MarshalBinary() ([]byte, error) {
 	body := make([]byte, 1, 1+len(m.GatewayAddress))
 	body[0] = m.GatewayID
 	return append(body, m.GatewayAddress...), nil
 }
 
-// Unmarshal parses a binary buffer into a message.
-func (m *GwInfoMessage) Unmarshal(body []byte) error {
+// UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
+func (m *GwInfoMessage) UnmarshalBinary(body []byte) error {
 	if len(body) < 1 {
 		return errors.New("message: body has invalid size")
 	}
