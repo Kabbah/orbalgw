@@ -2,7 +2,7 @@ package mqttsn
 
 import (
 	"encoding/binary"
-	"errors"
+	"fmt"
 )
 
 // ConnectMessage represents the contents of a MQTT-SN CONNECT message.
@@ -30,7 +30,7 @@ func (m *ConnectMessage) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
 func (m *ConnectMessage) UnmarshalBinary(body []byte) error {
 	if len(body) < 4 {
-		return errors.New("message: body has invalid size")
+		return fmt.Errorf("mqttsn: invalid body length (%v)", len(body))
 	}
 
 	err := m.Flags.Parse(body[0])
@@ -38,7 +38,7 @@ func (m *ConnectMessage) UnmarshalBinary(body []byte) error {
 		return err
 	}
 	if body[1] != ProtocolID {
-		return errors.New("message: invalid protocol ID")
+		return fmt.Errorf("mqttsn: invalid protocol ID (%v)", body[1])
 	}
 	m.Duration = binary.BigEndian.Uint16(body[2:4])
 	m.ClientID = string(body[4:])

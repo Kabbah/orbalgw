@@ -1,6 +1,6 @@
 package mqttsn
 
-import "errors"
+import "fmt"
 
 // SearchGwMessage represents the contents of a MQTT-SN SEARCHGW message.
 type SearchGwMessage struct {
@@ -17,7 +17,7 @@ func (m *SearchGwMessage) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
 func (m *SearchGwMessage) UnmarshalBinary(body []byte) error {
 	if len(body) != 1 {
-		return errors.New("message: body has invalid size")
+		return fmt.Errorf("mqttsn: invalid body length (%v)", len(body))
 	}
 
 	m.Radius = body[0]

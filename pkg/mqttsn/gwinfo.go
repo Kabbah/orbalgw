@@ -1,6 +1,6 @@
 package mqttsn
 
-import "errors"
+import "fmt"
 
 // GwInfoMessage represents the contents of a MQTT-SN GWINFO message.
 type GwInfoMessage struct {
@@ -18,7 +18,7 @@ func (m *GwInfoMessage) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
 func (m *GwInfoMessage) UnmarshalBinary(body []byte) error {
 	if len(body) < 1 {
-		return errors.New("message: body has invalid size")
+		return fmt.Errorf("mqttsn: invalid body length (%v)", len(body))
 	}
 
 	m.GatewayID = body[0]

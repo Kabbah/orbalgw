@@ -2,7 +2,7 @@ package mqttsn
 
 import (
 	"encoding/binary"
-	"errors"
+	"fmt"
 )
 
 // AdvertiseMessage represents the contents of a MQTT-SN ADVERTISE message.
@@ -22,10 +22,10 @@ func (m *AdvertiseMessage) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
 func (m *AdvertiseMessage) UnmarshalBinary(body []byte) error {
 	if len(body) != 3 {
-		return errors.New("message: body has invalid size")
+		return fmt.Errorf("mqttsn: invalid body length (%v)", len(body))
 	}
 
 	m.GatewayID = body[0]
-	m.Duration = binary.BigEndian.Uint16(body[1:])
+	m.Duration = binary.BigEndian.Uint16(body[1:3])
 	return nil
 }

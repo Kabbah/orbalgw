@@ -2,7 +2,6 @@ package mqttsn
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 )
 
@@ -55,20 +54,19 @@ type Message struct {
 
 // MarshalBinary implements encoding.BinaryMarshaler.MarshalBinary by outputting a MQTT-SN binary message.
 func (m *Message) MarshalBinary() ([]byte, error) {
-	length := len(m.Body)
-	if length > maxBodyLength3Bytes {
-		return nil, fmt.Errorf("message: length (%v) exceeds MQTT-SN limit", length)
+	if len(m.Body) > maxBodyLength3Bytes {
+		return nil, fmt.Errorf("mqttsn: body length (%v) exceeds MQTT-SN limit", len(m.Body))
 	}
 
 	var header []byte
-	if length > maxBodyLength1Byte {
-		length += 4
+	if len(m.Body) > maxBodyLength1Byte {
+		length := 4 + len(m.Body)
 		header = make([]byte, 4, length)
 		header[0] = 1
 		binary.BigEndian.PutUint16(header[1:3], uint16(length))
 		header[3] = uint8(m.Type)
 	} else {
-		length += 2
+		length := 2 + len(m.Body)
 		header = make([]byte, 2, length)
 		header[0] = uint8(length)
 		header[1] = uint8(m.Type)
@@ -81,13 +79,13 @@ func (m *Message) MarshalBinary() ([]byte, error) {
 // message. The body (variable part) is just sliced from the original buffer as is, and should be parsed afterwards.
 func (m *Message) UnmarshalBinary(data []byte) error {
 	if len(data) < 2 {
-		return errors.New("message: invalid MQTT-SN buffer")
+		return fmt.Errorf("mqttsn: invalid header size (%v)", len(data))
 	}
 
 	var length int
 	if data[0] == 1 {
 		if len(data) < 4 {
-			return errors.New("message: invalid MQTT-SN buffer")
+			return fmt.Errorf("mqttsn: invalid header size (%v)", len(data))
 		}
 		length = int(binary.BigEndian.Uint16(data[1:3]))
 		m.Type = MessageType(data[3])
@@ -99,7 +97,7 @@ func (m *Message) UnmarshalBinary(data []byte) error {
 	}
 
 	if len(data) != length {
-		return errors.New("message: MQTT-SN buffer has incorrect length")
+		return fmt.Errorf("mqttsn: header indicates incorrect message length (%v)", length)
 	}
 	return nil
 }
