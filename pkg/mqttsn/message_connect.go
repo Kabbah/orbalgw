@@ -20,14 +20,11 @@ func (m *ConnectMessage) MarshalBinary() ([]byte, error) {
 	body := make([]byte, 4, 4+len(m.ClientID))
 
 	flags, err := m.Flags.Value()
-	if err != nil {
-		return nil, err
-	}
 	body[0] = flags
 	body[1] = protocolID
 	binary.BigEndian.PutUint16(body[2:4], m.Duration)
 
-	return append(body, m.ClientID...), nil
+	return append(body, m.ClientID...), err
 }
 
 // UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
