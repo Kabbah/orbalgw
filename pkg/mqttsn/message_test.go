@@ -69,9 +69,9 @@ func TestMessageUnmarshal(t *testing.T) {
 	}{
 		{buf: nil, shouldFail: true},
 		{buf: []byte{}, shouldFail: true},
-		{buf: []byte{0x01}, shouldFail: true},
 		{buf: []byte{0x02, 0x16}, msg: Message{PingReq, nil}},
 		{buf: []byte{0x03, 0x16}, shouldFail: true},
+		{buf: []byte{0x01, 0x00, 0x03}, shouldFail: true},
 		{buf: []byte{0x01, 0x00, 0x04, 0x16}, msg: Message{PingReq, nil}},
 		{buf: []byte{0x01, 0x00, 0x05, 0x16}, shouldFail: true},
 	}
