@@ -1,6 +1,6 @@
 package mqttsn
 
-// WillMsgMessage represents the contents of a MQTT-SN WillMsg message.
+// WillMsgMessage represents the contents of a MQTT-SN WILLMSG message.
 type WillMsgMessage struct {
 	Data []byte
 }
