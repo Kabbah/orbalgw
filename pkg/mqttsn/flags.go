@@ -47,9 +47,6 @@ func (f *Flags) Parse(value uint8) error {
 	}
 
 	qos := int8((value & 0b0110_0000) >> 5)
-	if qos > 3 {
-		return fmt.Errorf("mqttsn: invalid QoS level (%v)", qos)
-	}
 	if qos == 3 {
 		qos = -1
 	}
