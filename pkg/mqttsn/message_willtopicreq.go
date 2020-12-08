@@ -1,8 +1,6 @@
 package mqttsn
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // WillTopicReqMessage represents the contents of a MQTT-SN WILLTOPICREQ message.
 type WillTopicReqMessage struct{}

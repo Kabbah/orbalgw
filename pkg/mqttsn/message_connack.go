@@ -1,8 +1,6 @@
 package mqttsn
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // ConnAckMessage represents the contents of a MQTT-SN CONNACK message.
 type ConnAckMessage struct {
