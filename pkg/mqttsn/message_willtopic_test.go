@@ -11,7 +11,7 @@ func TestWillTopicMarshal(t *testing.T) {
 		buf []byte
 	}{
 		{WillTopicMessage{Empty: true}, []byte{}},
-		{WillTopicMessage{Flags: Flags{}, Topic: "dead"}, []byte{0x00, 0x64, 0x65, 0x61, 0x64}},
+		{WillTopicMessage{Flags: Flags{}, TopicName: "dead"}, []byte{0x00, 0x64, 0x65, 0x61, 0x64}},
 	}
 
 	for _, tt := range tests {
@@ -35,7 +35,7 @@ func TestWillTopicUnmarshal(t *testing.T) {
 		{buf: nil, msg: WillTopicMessage{Empty: true}},
 		{buf: []byte{}, msg: WillTopicMessage{Empty: true}},
 		{buf: []byte{0x00}, shouldFail: true},
-		{buf: []byte{0x00, 0x64, 0x65, 0x61, 0x64}, msg: WillTopicMessage{Flags: Flags{}, Topic: "dead"}},
+		{buf: []byte{0x00, 0x64, 0x65, 0x61, 0x64}, msg: WillTopicMessage{Flags: Flags{}, TopicName: "dead"}},
 	}
 
 	for _, tt := range tests {
@@ -50,8 +50,8 @@ func TestWillTopicUnmarshal(t *testing.T) {
 				if msg.Flags != tt.msg.Flags {
 					t.Error("Unexpected flags")
 				}
-				if msg.Topic != tt.msg.Topic {
-					t.Errorf("Expected Topic to be %v, but got %v", tt.msg.Topic, msg.Topic)
+				if msg.TopicName != tt.msg.TopicName {
+					t.Errorf("Expected TopicName to be %v, but got %v", tt.msg.TopicName, msg.TopicName)
 				}
 			}
 		} else if !tt.shouldFail {

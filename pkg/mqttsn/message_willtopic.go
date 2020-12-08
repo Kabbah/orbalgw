@@ -4,9 +4,9 @@ import "errors"
 
 // WillTopicMessage represents the contents of a MQTT-SN WILLTOPIC message.
 type WillTopicMessage struct {
-	Empty bool
-	Flags Flags
-	Topic string
+	Empty     bool
+	Flags     Flags
+	TopicName string
 }
 
 // MarshalBinary implements encoding.BinaryMarshaler.MarshalBinary.
@@ -15,7 +15,7 @@ func (m *WillTopicMessage) MarshalBinary() ([]byte, error) {
 		return []byte{}, nil
 	}
 	flags, err := m.Flags.Value()
-	return append([]byte{flags}, []byte(m.Topic)...), err
+	return append([]byte{flags}, []byte(m.TopicName)...), err
 }
 
 // UnmarshalBinary implements encoding.BinaryUnmarshaler.UnmarshalBinary.
@@ -30,6 +30,6 @@ func (m *WillTopicMessage) UnmarshalBinary(body []byte) error {
 	}
 	m.Empty = false
 	err := m.Flags.Parse(body[0])
-	m.Topic = string(body[1:])
+	m.TopicName = string(body[1:])
 	return err
 }
