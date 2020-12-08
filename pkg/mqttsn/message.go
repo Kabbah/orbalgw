@@ -10,37 +10,34 @@ type MessageType uint8
 
 // Values of the MessageType field.
 const (
-	Advertise MessageType = iota
-	SearchGw
-	GwInfo
-	_
-	Connect
-	ConnAck
-	WillTopicReq
-	WillTopic
-	WillMsgReq
-	WillMsg
-	Register
-	RegAck
-	Publish
-	PubAck
-	PubComp
-	PubRec
-	PubRel
-	_
-	Subscribe
-	SubAck
-	Unsubscribe
-	UnsubAck
-	PingReq
-	PingResp
-	Disconnect
-	_
-	WillTopicUpd
-	WillTopicResp
-	WillMsgUpd
-	WillMsgResp
-	Encapsulated MessageType = 254
+	Advertise     MessageType = 0x00
+	SearchGw      MessageType = 0x01
+	GwInfo        MessageType = 0x02
+	Connect       MessageType = 0x04
+	ConnAck       MessageType = 0x05
+	WillTopicReq  MessageType = 0x06
+	WillTopic     MessageType = 0x07
+	WillMsgReq    MessageType = 0x08
+	WillMsg       MessageType = 0x09
+	Register      MessageType = 0x0a
+	RegAck        MessageType = 0x0b
+	Publish       MessageType = 0x0c
+	PubAck        MessageType = 0x0d
+	PubComp       MessageType = 0x0e
+	PubRec        MessageType = 0x0f
+	PubRel        MessageType = 0x10
+	Subscribe     MessageType = 0x12
+	SubAck        MessageType = 0x13
+	Unsubscribe   MessageType = 0x14
+	UnsubAck      MessageType = 0x15
+	PingReq       MessageType = 0x16
+	PingResp      MessageType = 0x17
+	Disconnect    MessageType = 0x18
+	WillTopicUpd  MessageType = 0x1a
+	WillTopicResp MessageType = 0x1b
+	WillMsgUpd    MessageType = 0x1c
+	WillMsgResp   MessageType = 0x1d
+	Encapsulated  MessageType = 0xfe
 )
 
 const maxBodyLength1Byte int = 255 - 2

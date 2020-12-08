@@ -5,8 +5,8 @@ type ReturnCode uint8
 
 // Values of the ReturnCode field.
 const (
-	Accepted ReturnCode = iota
-	RejectedCongestion
-	RejectedInvalidTopicID
-	RejectedNotSupported
+	Accepted               ReturnCode = 0x00
+	RejectedCongestion     ReturnCode = 0x01
+	RejectedInvalidTopicID ReturnCode = 0x02
+	RejectedNotSupported   ReturnCode = 0x03
 )

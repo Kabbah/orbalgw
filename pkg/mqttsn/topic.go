@@ -5,7 +5,8 @@ type TopicType uint8
 
 // Values of the TopicType field.
 const (
-	NormalTopicID TopicType = iota
-	PredefinedTopicID
-	ShortTopicName
+	NormalTopicID     TopicType = 0x00
+	NormalTopicName   TopicType = 0x00
+	PredefinedTopicID TopicType = 0x01
+	ShortTopicName    TopicType = 0x02
 )
