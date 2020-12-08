@@ -17,6 +17,9 @@ func (f *Flags) Value() (uint8, error) {
 	if f.QoS < -1 || f.QoS > 2 {
 		return 0, fmt.Errorf("mqttsn: invalid QoS level (%v)", f.QoS)
 	}
+	if f.TopicType > ShortTopicName {
+		return 0, fmt.Errorf("mqttsn: invalid topic type (%v)", f.TopicType)
+	}
 
 	bits := uint8(f.TopicType)
 	if f.CleanSession {
