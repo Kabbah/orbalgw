@@ -52,3 +52,10 @@ func (m *EncapsulatedMessage) UnmarshalBinary(data []byte) error {
 	copy(m.WirelessNodeID, data[3:headerLen])
 	return m.Message.UnmarshalBinary(data[headerLen:])
 }
+
+// IsEncapsulated checks if the byte slice looks like an encapsulated frame. More specifically, it returns true if and
+// only if the slice is at least 3 bytes long, the first byte is greater than or equal to 3 and the second byte is equal
+// to the Encapsulated message type.
+func IsEncapsulated(data []byte) bool {
+	return (len(data) >= 3) && (data[0] >= 3) && (MessageType(data[1]) == Encapsulated)
+}
