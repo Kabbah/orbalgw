@@ -1,3 +1,5 @@
+// Package mqttsn provides types that represent MQTT-SN messages and fields,
+// along with serialization and deserialization methods.
 package mqttsn
 
 import (
