@@ -3,23 +3,30 @@ package mqttsn
 import (
 	"bytes"
 	"testing"
+	"time"
 )
 
 func TestAdvertiseMarshal(t *testing.T) {
 	tests := []struct {
-		msg AdvertiseMessage
-		buf []byte
-	}{
-		{AdvertiseMessage{1, 1000}, []byte{0x01, 0x03, 0xe8}},
-	}
+		msg        AdvertiseMessage
+		buf        []byte
+		shouldFail bool
+	}{{
+		msg: AdvertiseMessage{1, 1000 * time.Second},
+		buf: []byte{0x01, 0x03, 0xe8},
+	}, {
+		msg:        AdvertiseMessage{1, 65536 * time.Second},
+		shouldFail: true,
+	}}
 
 	for _, tt := range tests {
-		buf, err := tt.msg.MarshalBinary()
-		if err == nil {
-			if !bytes.Equal(buf, tt.buf) {
+		if buf, err := tt.msg.MarshalBinary(); err == nil {
+			if tt.shouldFail {
+				t.Error("Expected error, but got nil")
+			} else if !bytes.Equal(buf, tt.buf) {
 				t.Error("Message body is wrong")
 			}
-		} else {
+		} else if !tt.shouldFail {
 			t.Errorf("Unexpected error: %v", err)
 		}
 	}
@@ -34,7 +41,7 @@ func TestAdvertiseUnmarshal(t *testing.T) {
 		{buf: nil, shouldFail: true},
 		{buf: []byte{}, shouldFail: true},
 		{buf: []byte{0x01, 0x03}, shouldFail: true},
-		{buf: []byte{0x01, 0x03, 0xe8}, msg: AdvertiseMessage{1, 1000}},
+		{buf: []byte{0x01, 0x03, 0xe8}, msg: AdvertiseMessage{1, 1000 * time.Second}},
 	}
 
 	for _, tt := range tests {
