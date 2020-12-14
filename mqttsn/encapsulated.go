@@ -2,10 +2,13 @@ package mqttsn
 
 import "fmt"
 
+// WirelessNodeID identifies a MQTT-SN client behind a forwarder.
+type WirelessNodeID []byte
+
 // EncapsulatedMessage represents an encapsulated MQTT-SN message, according to the Forwarder Encapsulation scheme.
 type EncapsulatedMessage struct {
 	Radius         uint8
-	WirelessNodeID []byte
+	WirelessNodeID WirelessNodeID
 	Message
 }
 
