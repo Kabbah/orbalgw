@@ -3,32 +3,42 @@ package mqttsn
 import (
 	"bytes"
 	"testing"
+	"time"
 )
 
 func TestDisconnectMarshal(t *testing.T) {
-	var duration uint16 = 10
+	duration := 10 * time.Second
+	badDuration := 65536 * time.Second
 	tests := []struct {
-		msg DisconnectMessage
-		buf []byte
-	}{
-		{DisconnectMessage{nil}, []byte{}},
-		{DisconnectMessage{&duration}, []byte{0x00, 0x0a}},
-	}
+		msg        DisconnectMessage
+		buf        []byte
+		shouldFail bool
+	}{{
+		msg: DisconnectMessage{nil},
+		buf: []byte{},
+	}, {
+		msg: DisconnectMessage{&duration},
+		buf: []byte{0x00, 0x0a},
+	}, {
+		msg:        DisconnectMessage{&badDuration},
+		shouldFail: true,
+	}}
 
 	for _, tt := range tests {
-		buf, err := tt.msg.MarshalBinary()
-		if err == nil {
-			if !bytes.Equal(buf, tt.buf) {
+		if buf, err := tt.msg.MarshalBinary(); err == nil {
+			if tt.shouldFail {
+				t.Error("Expected error, but got nil")
+			} else if !bytes.Equal(buf, tt.buf) {
 				t.Error("Message body is wrong")
 			}
-		} else {
+		} else if !tt.shouldFail {
 			t.Errorf("Unexpected error: %v", err)
 		}
 	}
 }
 
 func TestDisconnectUnmarshal(t *testing.T) {
-	var duration uint16 = 10
+	duration := 10 * time.Second
 	tests := []struct {
 		buf        []byte
 		msg        DisconnectMessage
