@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/Kabbah/orbalgw/internal/transport"
@@ -9,11 +10,13 @@ import (
 
 // MQTTSNHandler handles datagrams received from the MQTT-SN transport.
 type MQTTSNHandler struct {
+	gw *Gateway
 }
 
 // Handle parses a datagram into its respective MQTT-SN message and calls the
 // appropriate method in the Gateway.
 func (h *MQTTSNHandler) Handle(dgram transport.Datagram) error {
+	addr := mqttsnAddr{Addr: dgram.Addr}
 	var msg *mqttsn.Message
 
 	if mqttsn.IsEncapsulated(dgram.Data) {
@@ -21,6 +24,7 @@ func (h *MQTTSNHandler) Handle(dgram transport.Datagram) error {
 		if err := frame.UnmarshalBinary(dgram.Data); err != nil {
 			return err
 		}
+		addr.WirelessNodeID = frame.WirelessNodeID
 		msg = &frame.Message
 	} else {
 		msg = new(mqttsn.Message)
@@ -29,149 +33,154 @@ func (h *MQTTSNHandler) Handle(dgram transport.Datagram) error {
 		}
 	}
 
-	return h.handleMessage(msg)
+	return h.handleMessage(&addr, msg)
 }
 
-func (h *MQTTSNHandler) handleMessage(msg *mqttsn.Message) error {
+func (h *MQTTSNHandler) handleMessage(src *mqttsnAddr, msg *mqttsn.Message) error {
+	gw := h.gw
+	if gw == nil {
+		return errors.New("handler: gateway not set")
+	}
+
 	var err error
 	switch msg.Type {
 	case mqttsn.Advertise:
 		body := new(mqttsn.AdvertiseMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleAdvertise(src, body)
 		}
 	case mqttsn.SearchGw:
 		body := new(mqttsn.SearchGwMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleSearchGw(src, body)
 		}
 	case mqttsn.GwInfo:
 		body := new(mqttsn.GwInfoMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleGwInfo(src, body)
 		}
 	case mqttsn.Connect:
 		body := new(mqttsn.ConnectMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleConnect(src, body)
 		}
 	case mqttsn.ConnAck:
 		body := new(mqttsn.ConnAckMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleConnAck(src, body)
 		}
 	case mqttsn.WillTopicReq:
 		body := new(mqttsn.WillTopicReqMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleWillTopicReq(src, body)
 		}
 	case mqttsn.WillTopic:
 		body := new(mqttsn.WillTopicMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleWillTopic(src, body)
 		}
 	case mqttsn.WillMsgReq:
 		body := new(mqttsn.WillMsgReqMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleWillMsgReq(src, body)
 		}
 	case mqttsn.WillMsg:
 		body := new(mqttsn.WillMsgMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleWillMsg(src, body)
 		}
 	case mqttsn.Register:
 		body := new(mqttsn.RegisterMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleRegister(src, body)
 		}
 	case mqttsn.RegAck:
 		body := new(mqttsn.RegAckMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleRegAck(src, body)
 		}
 	case mqttsn.Publish:
 		body := new(mqttsn.PublishMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handlePublish(src, body)
 		}
 	case mqttsn.PubAck:
 		body := new(mqttsn.PubAckMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handlePubAck(src, body)
 		}
 	case mqttsn.PubComp:
 		body := new(mqttsn.PubCompMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handlePubComp(src, body)
 		}
 	case mqttsn.PubRec:
 		body := new(mqttsn.PubRecMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handlePubRec(src, body)
 		}
 	case mqttsn.PubRel:
 		body := new(mqttsn.PubRelMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handlePubRel(src, body)
 		}
 	case mqttsn.Subscribe:
 		body := new(mqttsn.SubscribeMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleSubscribe(src, body)
 		}
 	case mqttsn.SubAck:
 		body := new(mqttsn.SubAckMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleSubAck(src, body)
 		}
 	case mqttsn.Unsubscribe:
 		body := new(mqttsn.UnsubscribeMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleUnsubscribe(src, body)
 		}
 	case mqttsn.UnsubAck:
 		body := new(mqttsn.UnsubAckMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleUnsubAck(src, body)
 		}
 	case mqttsn.PingReq:
 		body := new(mqttsn.PingReqMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handlePingReq(src, body)
 		}
 	case mqttsn.PingResp:
 		body := new(mqttsn.PingRespMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handlePingResp(src, body)
 		}
 	case mqttsn.Disconnect:
 		body := new(mqttsn.DisconnectMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleDisconnect(src, body)
 		}
 	case mqttsn.WillTopicUpd:
 		body := new(mqttsn.WillTopicUpdMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleWillTopicUpd(src, body)
 		}
 	case mqttsn.WillTopicResp:
 		body := new(mqttsn.WillTopicRespMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleWillTopicResp(src, body)
 		}
 	case mqttsn.WillMsgUpd:
 		body := new(mqttsn.WillMsgUpdMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleWillMsgUpd(src, body)
 		}
 	case mqttsn.WillMsgResp:
 		body := new(mqttsn.WillMsgRespMessage)
 		if err = body.UnmarshalBinary(msg.Body); err == nil {
-			// TODO
+			gw.handleWillMsgResp(src, body)
 		}
 	default:
-		err = fmt.Errorf("parser: unknown message type (%v)", msg.Type)
+		err = fmt.Errorf("handler: unknown message type (%v)", msg.Type)
 	}
 
 	return err
